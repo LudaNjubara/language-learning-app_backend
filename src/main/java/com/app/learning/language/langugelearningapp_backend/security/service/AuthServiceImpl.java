@@ -1,5 +1,7 @@
 package com.app.learning.language.langugelearningapp_backend.security.service;
 
+import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
+import com.app.learning.language.langugelearningapp_backend.repository.SupportedLanguagesRepository;
 import com.app.learning.language.langugelearningapp_backend.security.dto.LoginDTO;
 import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
@@ -17,11 +19,13 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
+    private final SupportedLanguagesRepository supportedLanguagesRepository;
 
-    public AuthServiceImpl(JwtService jwtService, UserRepository userRepository, AuthorityRepository authorityRepository) {
+    public AuthServiceImpl(JwtService jwtService, UserRepository userRepository, AuthorityRepository authorityRepository, SupportedLanguagesRepository supportedLanguagesRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
+        this.supportedLanguagesRepository = supportedLanguagesRepository;
     }
 
     @Override
@@ -44,6 +48,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Optional<LoginDTO> register(LoginRequest req) {
         Optional<JwtUser> user = userRepository.findByUsername(req.getUsername());
+        SupportedLanguage defaultLanguage = supportedLanguagesRepository.findByLanguageCode("en").orElseThrow(
+                () -> new RuntimeException("Default language not found")
+        );
 
         if (user.isPresent()) {
             return Optional.empty();
@@ -52,6 +59,7 @@ public class AuthServiceImpl implements AuthService {
         JwtUser newUser = new JwtUser();
         newUser.setUsername(req.getUsername());
         newUser.setPassword(new BCryptPasswordEncoder().encode(req.getPassword()));
+        newUser.setSelectedLanguage(defaultLanguage);
 
         Authority userAuthority = authorityRepository.findByName("ROLE_USER");
 

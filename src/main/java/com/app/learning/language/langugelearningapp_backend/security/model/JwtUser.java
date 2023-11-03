@@ -1,5 +1,6 @@
 package com.app.learning.language.langugelearningapp_backend.security.model;
 
+import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,6 +26,8 @@ public class JwtUser {
 
     private String password;
 
+
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -34,4 +37,14 @@ public class JwtUser {
     )
     @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinTable(
+            name = "USER__LEARNING_LANGUAGE",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "lang_code", referencedColumnName = "language_code")}
+    )
+    @BatchSize(size = 20)
+    private SupportedLanguage selectedLanguage;
 }

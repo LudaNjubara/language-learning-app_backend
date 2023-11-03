@@ -87,7 +87,7 @@ public class JwtServiceImpl implements JwtService {
         return true;
     }
 
-    private ApplicationUser getUserDataFromJwt(String jwtToken) {
+    public ApplicationUser getUserDataFromJwt(String jwtToken) {
         Claims claims = Jwts
                 .parser()
                 .setSigningKey(secretKey)
