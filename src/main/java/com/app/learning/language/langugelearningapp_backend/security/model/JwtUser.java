@@ -1,5 +1,6 @@
 package com.app.learning.language.langugelearningapp_backend.security.model;
 
+import com.app.learning.language.langugelearningapp_backend.model.Quiz;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,7 +27,6 @@ public class JwtUser {
     private String username;
 
     private String password;
-
 
 
     @JsonIgnore
