@@ -74,4 +74,29 @@ public class QuizServiceImpl implements QuizService {
             return new ArrayList<>();
         }
     }
+
+    @Override
+    public List<Quiz> fetchQuizzesByLanguageCode(String languageCode, Integer numOfQuestions) {
+        try {
+            Optional<SupportedLanguage> language = supportedLanguagesRepository.findByLanguageCode(languageCode);
+
+            if(language.isEmpty()) {
+                throw new Exception("Language with code " + languageCode + " not found!");
+            }
+
+            List<Quiz> quizzes = quizRepository.findByLanguage(language.get());
+
+            if(quizzes.size() < numOfQuestions) {
+                throw new Exception("Not enough quizzes for " + language.get().getLanguageName() + " language!" + " Requested: " + numOfQuestions + ", available: " + quizzes.size());
+            }
+
+            // shuffle quizzes and return the first numOfQuestions
+            quizzes.sort((a, b) -> 0.5 > Math.random() ? -1 : 1);
+            return quizzes.subList(0, numOfQuestions);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }

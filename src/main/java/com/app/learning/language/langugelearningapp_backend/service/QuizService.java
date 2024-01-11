@@ -9,4 +9,6 @@ import java.util.List;
 public interface QuizService {
     void createQuiz(QuizPostRequest req, ApplicationUser appUser);
     List<Quiz> getAllQuizzes();
+
+    List<Quiz> fetchQuizzesByLanguageCode(String languageCode, Integer numOfQuestions);
 }

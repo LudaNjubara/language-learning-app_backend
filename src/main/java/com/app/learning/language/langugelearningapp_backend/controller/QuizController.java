@@ -48,6 +48,21 @@ public class QuizController {
         }
     }
 
+    // example url from client side: http://localhost:8080/api/quiz/fetch?languageCode=en
+    @GetMapping("/fetch")
+    public ResponseEntity<Object> fetchQuiz(
+            @RequestParam final String languageCode,
+            @RequestParam final Integer numOfQuestions
+    ) {
+        try {
+            List<Quiz> quizzes = quizService.fetchQuizzesByLanguageCode(languageCode, numOfQuestions);
+
+            return new ResponseEntity<>(quizzes, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/get-all")
     public List<Quiz> getAllQuizzes() {
         return quizService.getAllQuizzes();
