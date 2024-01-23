@@ -3,12 +3,15 @@ package com.app.learning.language.langugelearningapp_backend.service.impl;
 import com.app.learning.language.langugelearningapp_backend.dto.UserDTO;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.app.learning.language.langugelearningapp_backend.repository.SupportedLanguagesRepository;
+import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
 import com.app.learning.language.langugelearningapp_backend.security.repository.UserRepository;
 import com.app.learning.language.langugelearningapp_backend.service.SupportedLanguagesService;
 import com.app.learning.language.langugelearningapp_backend.service.UserService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,6 +36,20 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setSelectedLanguage(user.getSelectedLanguage());
+
+        List<QuizResponse> quizResponses = new ArrayList<>();
+
+        user.getTakenQuizzes().forEach(quiz -> {
+            QuizResponse quizResponse = new QuizResponse();
+
+            quizResponse.setId(quiz.getId());
+            quizResponse.setQuestion(quiz.getQuestion());
+            quizResponse.setLanguage(quiz.getLanguage());
+            quizResponse.setAnswers(quiz.getAnswers());
+            quizResponse.setCreatedByUsername(quiz.getCreatedBy().getUsername());
+            quizResponses.add(quizResponse);
+        });
+        userDTO.setTakenQuizzes(quizResponses);
 
         return userDTO;
     }

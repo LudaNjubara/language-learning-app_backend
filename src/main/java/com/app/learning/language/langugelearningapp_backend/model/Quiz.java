@@ -42,4 +42,9 @@ public class Quiz {
     )
     @BatchSize(size = 20)
     private SupportedLanguage language;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "takenQuizzes")
+    @BatchSize(size = 20)
+    private List<JwtUser> usersWhoTookTheQuiz = new ArrayList<>();
 }

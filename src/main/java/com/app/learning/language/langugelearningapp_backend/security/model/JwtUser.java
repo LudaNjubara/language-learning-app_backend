@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,4 +49,13 @@ public class JwtUser {
     )
     @BatchSize(size = 20)
     private SupportedLanguage selectedLanguage;
+
+    @ManyToMany
+    @JoinTable(name = "USER_TAKEN_QUIZ",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "quiz_id", referencedColumnName = "id")}
+    )
+    @BatchSize(size = 20)
+    private List<Quiz> takenQuizzes;
+
 }
