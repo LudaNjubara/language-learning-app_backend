@@ -3,8 +3,10 @@ package com.app.learning.language.langugelearningapp_backend.service.impl;
 import com.app.learning.language.langugelearningapp_backend.configuration.AuditorConfig;
 import com.app.learning.language.langugelearningapp_backend.model.Quiz;
 import com.app.learning.language.langugelearningapp_backend.model.QuizAnswer;
+import com.app.learning.language.langugelearningapp_backend.model.QuizUserAnswer;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.app.learning.language.langugelearningapp_backend.repository.QuizRepository;
+import com.app.learning.language.langugelearningapp_backend.repository.QuizUserAnswerRepository;
 import com.app.learning.language.langugelearningapp_backend.repository.SupportedLanguagesRepository;
 import com.app.learning.language.langugelearningapp_backend.request.ListQuizSubmitRequest;
 import com.app.learning.language.langugelearningapp_backend.request.QuizPostRequest;
@@ -33,6 +35,7 @@ public class QuizServiceImpl implements QuizService {
 
     private final UserRepository userRepository;
     private final SupportedLanguagesRepository supportedLanguagesRepository;
+    private final QuizUserAnswerRepository quizUserAnswerRepository;
 
     private final AuditorConfig auditorConfig;
 
@@ -102,6 +105,15 @@ public class QuizServiceImpl implements QuizService {
             ApplicationUser appUser = auditorConfig.getCurrentAuditor().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Application user not found!"));
             JwtUser user = userRepository.findByUsername(appUser.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!") );
 
+            QuizUserAnswer quizUserAnswer = new QuizUserAnswer();
+            quizUserAnswer.setQuiz(quiz);
+            quizUserAnswer.setUser(user);
+            quizUserAnswer.setUserAnswer(quizSubmitReq.getAnswer());
+
+            quiz.getUserAnswers().add(quizUserAnswer);
+
+            user.getUserAnswers().add(quizUserAnswer);
+
             user.getTakenQuizzes().add(quiz);
 
         }
@@ -114,6 +126,9 @@ public class QuizServiceImpl implements QuizService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Language with code " + languageCode + " not found!")
         );
 
+        ApplicationUser appUser = auditorConfig.getCurrentAuditor().orElse(null);
+        JwtUser user = userRepository.findByUsername(appUser.getUsername()).orElse(null);
+
         List<Quiz> quizzes = quizRepository.findByLanguage(language);
 
         if (quizzes.size() < numOfQuestions) {
@@ -122,15 +137,25 @@ public class QuizServiceImpl implements QuizService {
 
         List<QuizResponse> quizResponses = new ArrayList<>();
 
+        Collections.shuffle(quizzes);
+
         for (Quiz quiz : quizzes.subList(0, numOfQuestions)) {
             QuizResponse quizResponse = new QuizResponse();
-            quizResponse.setQuestion(quiz.getQuestion());
+
+
             quizResponse.setId(quiz.getId());
+            quizResponse.setQuestion(quiz.getQuestion());
             quizResponse.setAnswers(quiz.getAnswers());
+
+            Optional<QuizUserAnswer> userAnswer = quizUserAnswerRepository.findByQuizIdAndUserId(quiz.getId(), user.getId());
+
+            userAnswer.ifPresent(quizUserAnswer -> quizResponse.setUserAnswer(quizUserAnswer.getUserAnswer()));
+
+            quizResponse.setLanguage(quiz.getLanguage());
+            quizResponse.setCreatedByUsername(quiz.getCreatedBy().getUsername());
             quizResponses.add(quizResponse);
         }
 
-        Collections.shuffle(quizResponses);
-        return quizResponses.subList(0, numOfQuestions);
+        return quizResponses;
     }
 }

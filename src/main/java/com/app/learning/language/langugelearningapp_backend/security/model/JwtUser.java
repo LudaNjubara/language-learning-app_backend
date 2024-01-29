@@ -1,6 +1,7 @@
 package com.app.learning.language.langugelearningapp_backend.security.model;
 
 import com.app.learning.language.langugelearningapp_backend.model.Quiz;
+import com.app.learning.language.langugelearningapp_backend.model.QuizUserAnswer;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -57,5 +58,9 @@ public class JwtUser {
     )
     @BatchSize(size = 20)
     private List<Quiz> takenQuizzes;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<QuizUserAnswer> userAnswers = new ArrayList<>();
 
 }

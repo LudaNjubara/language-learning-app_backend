@@ -10,6 +10,7 @@ import java.util.List;
 @Data
 public class UserDTO {
     private String username;
+    private List<String> authorities;
     private SupportedLanguage selectedLanguage;
     private List<QuizResponse> takenQuizzes;
 }

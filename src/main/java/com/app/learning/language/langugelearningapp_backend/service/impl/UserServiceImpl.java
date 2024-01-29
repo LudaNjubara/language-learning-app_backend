@@ -1,13 +1,18 @@
 package com.app.learning.language.langugelearningapp_backend.service.impl;
 
 import com.app.learning.language.langugelearningapp_backend.dto.UserDTO;
+import com.app.learning.language.langugelearningapp_backend.model.QuizUserAnswer;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
+import com.app.learning.language.langugelearningapp_backend.repository.QuizUserAnswerRepository;
 import com.app.learning.language.langugelearningapp_backend.repository.SupportedLanguagesRepository;
 import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
+import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
 import com.app.learning.language.langugelearningapp_backend.security.repository.UserRepository;
 import com.app.learning.language.langugelearningapp_backend.service.SupportedLanguagesService;
 import com.app.learning.language.langugelearningapp_backend.service.UserService;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -15,27 +20,26 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final QuizUserAnswerRepository quizUserAnswerRepository;
     private final SupportedLanguagesRepository supportedLanguagesRepository;
 
-    public UserServiceImpl(UserRepository userRepository, SupportedLanguagesRepository supportedLanguagesRepository) {
-        this.userRepository = userRepository;
-        this.supportedLanguagesRepository = supportedLanguagesRepository;
-    }
-
     @Override
-    public UserDTO getUserData(String username) throws Exception {
+    @SneakyThrows
+    public UserDTO getUserData(String username) {
         Optional<JwtUser> jwtUser = userRepository.findByUsername(username);
 
-        if (jwtUser.isEmpty())  throw new Exception("User not found");
+        if (jwtUser.isEmpty()) throw new Exception("User not found");
 
         JwtUser user = jwtUser.get();
 
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setSelectedLanguage(user.getSelectedLanguage());
+        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).toList());
 
         List<QuizResponse> quizResponses = new ArrayList<>();
 
@@ -46,6 +50,11 @@ public class UserServiceImpl implements UserService {
             quizResponse.setQuestion(quiz.getQuestion());
             quizResponse.setLanguage(quiz.getLanguage());
             quizResponse.setAnswers(quiz.getAnswers());
+
+            Optional<QuizUserAnswer> userAnswer = quizUserAnswerRepository.findByQuizIdAndUserId(quiz.getId(), user.getId());
+
+            userAnswer.ifPresent(quizUserAnswer -> quizResponse.setUserAnswer(quizUserAnswer.getUserAnswer()));
+
             quizResponse.setCreatedByUsername(quiz.getCreatedBy().getUsername());
             quizResponses.add(quizResponse);
         });

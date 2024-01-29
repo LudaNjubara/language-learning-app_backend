@@ -47,4 +47,7 @@ public class Quiz {
     @ManyToMany(mappedBy = "takenQuizzes")
     @BatchSize(size = 20)
     private List<JwtUser> usersWhoTookTheQuiz = new ArrayList<>();
+
+    @OneToMany(mappedBy = "quiz", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<QuizUserAnswer> userAnswers = new ArrayList<>();
 }

@@ -1,14 +1,11 @@
 package com.app.learning.language.langugelearningapp_backend.controller;
 
 import com.app.learning.language.langugelearningapp_backend.configuration.AuditorConfig;
-import com.app.learning.language.langugelearningapp_backend.model.Quiz;
 import com.app.learning.language.langugelearningapp_backend.request.ListQuizSubmitRequest;
 import com.app.learning.language.langugelearningapp_backend.request.QuizPostRequest;
 import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
 import com.app.learning.language.langugelearningapp_backend.security.model.ApplicationUser;
-import com.app.learning.language.langugelearningapp_backend.security.service.JwtService;
 import com.app.learning.language.langugelearningapp_backend.service.QuizService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +47,7 @@ public class QuizController {
         }
     }
 
-    @PostMapping("/submit-quiz")
+    @PostMapping("/submit")
     public void submitQuiz(
             @Valid @RequestBody final ListQuizSubmitRequest req
     ) {

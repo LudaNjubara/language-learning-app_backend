@@ -11,6 +11,7 @@ public class QuizResponse {
     private Long id;
     private String question;
     private List<QuizAnswer> answers;
+    private String userAnswer;
     private String createdByUsername;
     private SupportedLanguage language;
 }
