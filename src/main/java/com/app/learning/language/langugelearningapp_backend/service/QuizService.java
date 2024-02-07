@@ -15,4 +15,6 @@ public interface QuizService {
     void submitQuiz(ListQuizSubmitRequest req);
 
     List<QuizResponse> fetchQuizzesByLanguageCode(String languageCode, Integer numOfQuestions);
+
+    void deleteQuiz(Long id);
 }

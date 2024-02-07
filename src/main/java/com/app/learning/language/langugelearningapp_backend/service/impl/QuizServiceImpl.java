@@ -81,9 +81,12 @@ public class QuizServiceImpl implements QuizService {
 
             for (Quiz quiz : quizzes) {
                 QuizResponse quizResponse = new QuizResponse();
-                quizResponse.setQuestion(quiz.getQuestion());
+
                 quizResponse.setId(quiz.getId());
+                quizResponse.setQuestion(quiz.getQuestion());
                 quizResponse.setAnswers(quiz.getAnswers());
+                quizResponse.setLanguage(quiz.getLanguage());
+                quizResponse.setCreatedByUsername(quiz.getCreatedBy().getUsername());
                 quizResponses.add(quizResponse);
             }
 
@@ -157,5 +160,10 @@ public class QuizServiceImpl implements QuizService {
         }
 
         return quizResponses;
+    }
+
+    @Override
+    public void deleteQuiz(Long id) {
+        quizRepository.deleteById(id);
     }
 }

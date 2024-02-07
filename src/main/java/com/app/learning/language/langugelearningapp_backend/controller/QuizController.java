@@ -66,4 +66,9 @@ public class QuizController {
     public List<QuizResponse> getAllQuizzes() {
         return quizService.getAllQuizzes();
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteQuiz(@PathVariable Long id) {
+        quizService.deleteQuiz(id);
+    }
 }
