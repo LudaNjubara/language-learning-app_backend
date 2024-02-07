@@ -4,12 +4,12 @@ import com.app.learning.language.langugelearningapp_backend.model.Quiz;
 import com.app.learning.language.langugelearningapp_backend.request.ListQuizSubmitRequest;
 import com.app.learning.language.langugelearningapp_backend.request.QuizPostRequest;
 import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
-import com.app.learning.language.langugelearningapp_backend.security.model.ApplicationUser;
+import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
 
 import java.util.List;
 
 public interface QuizService {
-    void createQuiz(QuizPostRequest req, ApplicationUser appUser);
+    void createQuiz(QuizPostRequest req, JwtUser appUser);
     List<QuizResponse> getAllQuizzes();
 
     void submitQuiz(ListQuizSubmitRequest req);

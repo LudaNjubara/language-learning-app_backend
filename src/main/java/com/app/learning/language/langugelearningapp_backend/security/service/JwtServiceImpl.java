@@ -1,17 +1,20 @@
 package com.app.learning.language.langugelearningapp_backend.security.service;
 
-import com.app.learning.language.langugelearningapp_backend.security.jwt.UserAuth;
-import com.app.learning.language.langugelearningapp_backend.security.model.ApplicationUser;
 import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
+import com.app.learning.language.langugelearningapp_backend.security.repository.UserRepository;
 import io.jsonwebtoken.*;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.util.Arrays;
@@ -20,8 +23,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
+    private final UserRepository userRepository;
     private static final Logger log = LoggerFactory.getLogger(JwtServiceImpl.class);
     private static final String AUTHORITIES_KEY = "authorities";
 
@@ -39,7 +44,7 @@ public class JwtServiceImpl implements JwtService {
         }
 
         // JWT is valid, store authentication in Spring security context
-        ApplicationUser applicationUser = getUserDataFromJwt(token);
+        JwtUser applicationUser = getUserDataFromJwt(token);
         saveAuthentication(applicationUser);
 
         return true;
@@ -87,27 +92,25 @@ public class JwtServiceImpl implements JwtService {
         return true;
     }
 
-    public ApplicationUser getUserDataFromJwt(String jwtToken) {
+    public JwtUser getUserDataFromJwt(String jwtToken) {
         Claims claims = Jwts
                 .parser()
                 .setSigningKey(secretKey)
                 .parseClaimsJws(jwtToken)
                 .getBody();
 
-        List<SimpleGrantedAuthority> authorities = Arrays
-                .stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                .map(SimpleGrantedAuthority::new)
-                .toList();
-
-        ApplicationUser applicationUser = new ApplicationUser();
-        applicationUser.setUsername(claims.getSubject());
-        applicationUser.setAuthorities(authorities);
-
-        return applicationUser;
+        return userRepository
+                .findByUsername(claims.getSubject())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
     }
 
-    private void saveAuthentication(ApplicationUser applicationUser) {
-        Authentication authentication = new UserAuth(applicationUser);
+    private void saveAuthentication(JwtUser applicationUser) {
+        List<SimpleGrantedAuthority> authorities = applicationUser.getAuthorities()
+                .stream()
+                .map(authority -> new SimpleGrantedAuthority(authority.name()))
+                .collect(Collectors.toList());
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(applicationUser, null, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

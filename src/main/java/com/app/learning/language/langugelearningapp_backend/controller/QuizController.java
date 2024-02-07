@@ -4,7 +4,8 @@ import com.app.learning.language.langugelearningapp_backend.configuration.Audito
 import com.app.learning.language.langugelearningapp_backend.request.ListQuizSubmitRequest;
 import com.app.learning.language.langugelearningapp_backend.request.QuizPostRequest;
 import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
-import com.app.learning.language.langugelearningapp_backend.security.model.ApplicationUser;
+import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
+import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
 import com.app.learning.language.langugelearningapp_backend.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/quiz")
@@ -33,9 +35,9 @@ public class QuizController {
             @Valid @RequestBody final QuizPostRequest req
     ) {
         try {
-            ApplicationUser appUser = auditorConfig.getCurrentAuditor().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
-            List<String> authorities = appUser.getAuthorities().stream().map(SimpleGrantedAuthority::getAuthority).toList();
-            if (!authorities.contains("ROLE_USER")) {
+            JwtUser appUser = auditorConfig.getCurrentAuditor().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+            Set<Authority> authorities = appUser.getAuthorities();
+            if (!authorities.contains(Authority.ROLE_ADMIN)) {
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You are not authorized to create a quiz!");
             }
 

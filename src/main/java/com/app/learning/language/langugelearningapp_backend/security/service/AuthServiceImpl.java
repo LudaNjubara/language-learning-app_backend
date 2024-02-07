@@ -52,10 +52,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Optional<RegisterDTO> register(LoginRequest req) {
         Optional<JwtUser> user = userRepository.findByUsername(req.getUsername());
-        SupportedLanguage defaultLanguage = supportedLanguagesRepository.findByLanguageCode("en").orElseThrow(
-                () -> new RuntimeException("Default language not found")
-        );
-
         if (user.isPresent()) {
             return Optional.empty();
         }
@@ -63,7 +59,12 @@ public class AuthServiceImpl implements AuthService {
         JwtUser newUser = new JwtUser();
         newUser.setUsername(req.getUsername());
         newUser.setPassword(new BCryptPasswordEncoder().encode(req.getPassword()));
+
+        SupportedLanguage defaultLanguage = supportedLanguagesRepository.findByLanguageCode("en").orElseThrow(
+                () -> new RuntimeException("Default language not found")
+        );
         newUser.setSelectedLanguage(defaultLanguage);
+
         newUser.getAuthorities().add(Authority.ROLE_USER);
         userRepository.save(newUser);
 
