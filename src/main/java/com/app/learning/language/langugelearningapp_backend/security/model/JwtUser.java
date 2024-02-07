@@ -30,17 +30,6 @@ public class JwtUser {
 
     private String password;
 
-
-    @JsonIgnore
-    @ManyToMany
-    @JoinTable(
-            name = "USER_AUTHORITY",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_id", referencedColumnName = "id")}
-    )
-    @BatchSize(size = 20)
-    private Set<Authority> authorities = new HashSet<>();
-
     @JsonIgnore
     @ManyToOne
     @JoinTable(
@@ -62,5 +51,11 @@ public class JwtUser {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<QuizUserAnswer> userAnswers = new ArrayList<>();
+
+    @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "authority", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<Authority> authorities = new HashSet<>();
 
 }

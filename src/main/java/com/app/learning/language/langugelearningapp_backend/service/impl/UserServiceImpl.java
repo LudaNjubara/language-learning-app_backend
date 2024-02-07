@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(user.getUsername());
         userDTO.setSelectedLanguage(user.getSelectedLanguage());
-        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::getName).toList());
+        userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::name).toList());
 
         List<QuizResponse> quizResponses = new ArrayList<>();
 

@@ -50,7 +50,7 @@ public class JwtServiceImpl implements JwtService {
         Instant expiration = Instant.now().plusSeconds(accessTokenValiditySeconds);
         String authorities = jwtUser.getAuthorities()
                 .stream()
-                .map(Authority::getName)
+                .map(Authority::name)
                 .collect(Collectors.joining(","));
 
         return Jwts

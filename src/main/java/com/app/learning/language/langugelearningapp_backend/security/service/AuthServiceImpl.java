@@ -7,7 +7,6 @@ import com.app.learning.language.langugelearningapp_backend.security.dto.LoginDT
 import com.app.learning.language.langugelearningapp_backend.security.dto.RegisterDTO;
 import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
-import com.app.learning.language.langugelearningapp_backend.security.repository.AuthorityRepository;
 import com.app.learning.language.langugelearningapp_backend.security.repository.UserRepository;
 import com.app.learning.language.langugelearningapp_backend.security.request.LoginRequest;
 import com.app.learning.language.langugelearningapp_backend.service.UserService;
@@ -19,21 +18,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final JwtService jwtService;
     private final UserService userService;
     private final UserRepository userRepository;
-    private final AuthorityRepository authorityRepository;
     private final SupportedLanguagesRepository supportedLanguagesRepository;
-
-    public AuthServiceImpl(JwtService jwtService, UserService userService, UserRepository userRepository, AuthorityRepository authorityRepository, SupportedLanguagesRepository supportedLanguagesRepository) {
-        this.jwtService = jwtService;
-        this.userService = userService;
-        this.userRepository = userRepository;
-        this.authorityRepository = authorityRepository;
-        this.supportedLanguagesRepository = supportedLanguagesRepository;
-    }
 
     @Override
     @SneakyThrows
@@ -73,15 +64,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setUsername(req.getUsername());
         newUser.setPassword(new BCryptPasswordEncoder().encode(req.getPassword()));
         newUser.setSelectedLanguage(defaultLanguage);
-
-        Authority userAuthority = authorityRepository.findByName("ROLE_USER");
-
-        if (userAuthority != null) {
-            newUser.getAuthorities().add(userAuthority);
-        } else {
-            throw new RuntimeException("User authority not found");
-        }
-
+        newUser.getAuthorities().add(Authority.ROLE_USER);
         userRepository.save(newUser);
 
         return Optional.of(
