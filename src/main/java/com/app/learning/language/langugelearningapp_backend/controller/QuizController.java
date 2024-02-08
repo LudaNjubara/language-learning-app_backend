@@ -1,25 +1,14 @@
 package com.app.learning.language.langugelearningapp_backend.controller;
 
 import com.app.learning.language.langugelearningapp_backend.configuration.AuditorConfig;
-import com.app.learning.language.langugelearningapp_backend.request.ListQuizSubmitRequest;
-import com.app.learning.language.langugelearningapp_backend.request.QuizPostRequest;
 import com.app.learning.language.langugelearningapp_backend.request.QuizSubmitRequest;
 import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
-import com.app.learning.language.langugelearningapp_backend.security.model.Authority;
-import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
 import com.app.learning.language.langugelearningapp_backend.service.QuizService;
-import lombok.AllArgsConstructor;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
-import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/quiz")

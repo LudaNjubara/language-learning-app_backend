@@ -1,13 +1,11 @@
 package com.app.learning.language.langugelearningapp_backend.model;
 
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

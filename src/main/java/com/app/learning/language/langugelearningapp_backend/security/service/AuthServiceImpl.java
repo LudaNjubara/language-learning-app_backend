@@ -1,6 +1,6 @@
 package com.app.learning.language.langugelearningapp_backend.security.service;
 
-import com.app.learning.language.langugelearningapp_backend.dto.UserDTO;
+import com.app.learning.language.langugelearningapp_backend.configuration.AuditorConfig;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.app.learning.language.langugelearningapp_backend.repository.SupportedLanguagesRepository;
 import com.app.learning.language.langugelearningapp_backend.security.dto.LoginDTO;
@@ -12,8 +12,10 @@ import com.app.learning.language.langugelearningapp_backend.security.request.Log
 import com.app.learning.language.langugelearningapp_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -26,25 +28,24 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final SupportedLanguagesRepository supportedLanguagesRepository;
 
+    private final AuditorConfig auditorConfig;
+
     @Override
     @SneakyThrows
     public Optional<LoginDTO> login(LoginRequest req) {
-        Optional<JwtUser> user = userRepository.findByUsername(req.getUsername());
+        JwtUser user = userRepository.findByUsername(req.getUsername()).orElse(null);
 
-        if (user.isEmpty() || !isMatchingPassword(req.getPassword(), user.get().getPassword())) {
+        if (user == null || !isMatchingPassword(req.getPassword(), user.getPassword())) {
             return Optional.empty();
         }
 
-        UserDTO userDTO = userService.getUserData(req.getUsername());
-
         return Optional.of(
                 new LoginDTO(
-                        user.get().getId(),
-                        user.get().getUsername(),
-                        userDTO.getAuthorities(),
-                        userDTO.getSelectedLanguage(),
-                        userDTO.getTakenQuizzes(),
-                        jwtService.createJwt(user.get())
+                        user.getId(),
+                        user.getUsername(),
+                        user.getAuthorities().stream().map(Authority::name).toList(),
+                        user.getSelectedLanguage(),
+                        jwtService.createJwt(user)
                 )
         );
     }
@@ -61,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         newUser.setPassword(new BCryptPasswordEncoder().encode(req.getPassword()));
 
         SupportedLanguage defaultLanguage = supportedLanguagesRepository.findByLanguageCode("en").orElseThrow(
-                () -> new RuntimeException("Default language not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Default language not found")
         );
         newUser.setSelectedLanguage(defaultLanguage);
 
@@ -72,6 +73,8 @@ public class AuthServiceImpl implements AuthService {
                 new RegisterDTO(
                         newUser.getId(),
                         newUser.getUsername(),
+                        newUser.getAuthorities().stream().map(Authority::name).toList(),
+                        newUser.getSelectedLanguage(),
                         jwtService.createJwt(newUser)
                 )
         );

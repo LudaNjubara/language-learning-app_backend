@@ -1,7 +1,6 @@
 package com.app.learning.language.langugelearningapp_backend.security.dto;
 
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
-import com.app.learning.language.langugelearningapp_backend.response.QuizResponse;
 import lombok.Data;
 
 import java.util.List;
@@ -12,7 +11,6 @@ public class LoginDTO {
     private final String username;
     private final List<String> authorities;
     private final SupportedLanguage selectedLanguage;
-    private final List<QuizResponse> takenQuizzes;
     private final String jwt;
 
 }

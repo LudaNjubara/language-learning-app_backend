@@ -6,7 +6,7 @@ import com.app.learning.language.langugelearningapp_backend.security.service.Jwt
 import com.app.learning.language.langugelearningapp_backend.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.logging.Logger;
 
 import static com.app.learning.language.langugelearningapp_backend.security.jwt.JwtFilter.AUTHORIZATION_TOKEN_PREFIX;

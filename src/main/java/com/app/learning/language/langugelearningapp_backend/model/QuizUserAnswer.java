@@ -1,12 +1,10 @@
 package com.app.learning.language.langugelearningapp_backend.model;
 
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
 
 @Entity(name = "quiz_user_answer")
 @AllArgsConstructor

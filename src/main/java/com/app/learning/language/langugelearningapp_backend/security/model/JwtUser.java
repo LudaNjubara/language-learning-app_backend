@@ -1,15 +1,14 @@
 package com.app.learning.language.langugelearningapp_backend.security.model;
 
 import com.app.learning.language.langugelearningapp_backend.model.Quiz;
-import com.app.learning.language.langugelearningapp_backend.model.QuizUserAnswer;
 import com.app.learning.language.langugelearningapp_backend.model.SupportedLanguage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 
-import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
