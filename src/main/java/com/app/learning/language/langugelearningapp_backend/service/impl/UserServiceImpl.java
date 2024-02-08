@@ -41,25 +41,6 @@ public class UserServiceImpl implements UserService {
         userDTO.setSelectedLanguage(user.getSelectedLanguage());
         userDTO.setAuthorities(user.getAuthorities().stream().map(Authority::name).toList());
 
-        List<QuizResponse> quizResponses = new ArrayList<>();
-
-        user.getTakenQuizzes().forEach(quiz -> {
-            QuizResponse quizResponse = new QuizResponse();
-
-            quizResponse.setId(quiz.getId());
-            quizResponse.setQuestion(quiz.getQuestion());
-            quizResponse.setLanguage(quiz.getLanguage());
-            quizResponse.setAnswers(quiz.getAnswers());
-
-            Optional<QuizUserAnswer> userAnswer = quizUserAnswerRepository.findByQuizIdAndUserId(quiz.getId(), user.getId());
-
-            userAnswer.ifPresent(quizUserAnswer -> quizResponse.setUserAnswer(quizUserAnswer.getUserAnswer()));
-
-            quizResponse.setCreatedByUsername(quiz.getCreatedBy().getUsername());
-            quizResponses.add(quizResponse);
-        });
-        userDTO.setTakenQuizzes(quizResponses);
-
         return userDTO;
     }
 

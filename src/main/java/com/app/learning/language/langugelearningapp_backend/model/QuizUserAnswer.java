@@ -17,14 +17,18 @@ public class QuizUserAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userAnswer;
+    @ManyToOne
+    @JoinColumn(name = "quiz_id")
+    private Quiz quiz;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
+    @JoinColumn(name = "question_id")
+    private QuizQuestion question;
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private JwtUser user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "quiz_id")
-    @JsonIgnore
-    private Quiz quiz;
+    @Column(name = "user_answer")
+    private String userAnswer;
 }

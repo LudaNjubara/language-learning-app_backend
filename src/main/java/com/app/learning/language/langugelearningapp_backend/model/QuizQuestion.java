@@ -1,11 +1,9 @@
 package com.app.learning.language.langugelearningapp_backend.model;
 
 import com.app.learning.language.langugelearningapp_backend.security.model.JwtUser;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,27 +14,23 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Quiz {
+public class QuizQuestion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "taken_by")
-    private JwtUser takenBy;
+    private String text;
 
-    private LocalDateTime takenAt;
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private JwtUser createdBy;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn(name = "language_code")
     private SupportedLanguage language;
 
-    @ManyToMany
-    @JoinTable(
-            joinColumns = @JoinColumn(name = "quiz_id"),
-            inverseJoinColumns = @JoinColumn(name = "question_id"))
-    private List<QuizQuestion> questions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<QuizUserAnswer> userAnswers = new ArrayList<>();
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    private List<QuizAnswer> answers = new ArrayList<>();
 }

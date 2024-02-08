@@ -99,9 +99,13 @@ public class JwtServiceImpl implements JwtService {
                 .parseClaimsJws(jwtToken)
                 .getBody();
 
-        return userRepository
+        JwtUser jwtUser = userRepository
                 .findByUsername(claims.getSubject())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        jwtUser.setQuizzesTaken(null);
+
+        return jwtUser;
     }
 
     private void saveAuthentication(JwtUser applicationUser) {

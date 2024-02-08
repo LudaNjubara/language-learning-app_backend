@@ -40,22 +40,13 @@ public class JwtUser {
     @BatchSize(size = 20)
     private SupportedLanguage selectedLanguage;
 
-    @ManyToMany
-    @JoinTable(name = "USER_TAKEN_QUIZ",
-            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
-            inverseJoinColumns = {@JoinColumn(name = "quiz_id", referencedColumnName = "id")}
-    )
-    @BatchSize(size = 20)
-    private List<Quiz> takenQuizzes;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "takenBy", cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<QuizUserAnswer> userAnswers = new ArrayList<>();
+    private List<Quiz> quizzesTaken = new ArrayList<>();
 
     @ElementCollection(targetClass = Authority.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "user_authority", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "authority", nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<Authority> authorities = new HashSet<>();
-
 }

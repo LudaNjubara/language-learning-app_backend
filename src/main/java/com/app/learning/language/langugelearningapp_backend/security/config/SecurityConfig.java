@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // Public endpoints
                 .antMatchers(UNAUTHENTICATED_ENDPOINTS.toArray(new String[0])).permitAll()
                 // Admin endpoints
-                .antMatchers("/api/quiz/fetch").hasRole("ADMIN")
+                .antMatchers("/api/quiz/get-all").hasRole("ADMIN")
                 // Private endpoints
                 .anyRequest().authenticated();
 
